@@ -577,6 +577,7 @@
   "Original title: ": "原始标题: ",
   "Delete table column": "删除列",
   "Skip required validation": "跳过必填校验",
+  "Keep value after submit": "保持原值",
   "Form values": "表单值",
   "Fields values": "字段值",
   "The field has been deleted": "字段已删除",
