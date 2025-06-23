@@ -171,6 +171,29 @@ export const GeneralSchemaItems: React.FC<{
             }}
           />
         )}
+        {!field.readPretty && (
+          <SchemaSettingsSwitchItem
+            key="keep-value-after-submit"
+            title={t('Keep value after submit')}
+            checked={fieldSchema['x-component-props']?.keepValueAfterSubmit}
+            onChange={(checked) => {
+              field.componentProps = field.componentProps || {};
+              field.componentProps.keepValueAfterSubmit = checked;
+              fieldSchema['x-component-props'] = fieldSchema['x-component-props'] || {};
+              fieldSchema['x-component-props'].keepValueAfterSubmit = checked;
+              dn.emit('patch', {
+                schema: {
+                  'x-uid': fieldSchema['x-uid'],
+                  'x-component-props': {
+                    ...fieldSchema['x-component-props'],
+                    keepValueAfterSubmit: checked,
+                  },
+                },
+              });
+              dn.refresh();
+            }}
+          />
+        )}
       </>
     );
   },
