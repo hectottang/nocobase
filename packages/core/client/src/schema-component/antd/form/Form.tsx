@@ -111,11 +111,13 @@ export const Form: React.FC<FormProps> & { Designer?: any } = observer(
             const field = form.fields[key] as any;
             if (field?.componentProps?.keepValueAfterSubmit) {
               keepValues[key] = field.value;
+            } else {
+              field.initialValue = null;
             }
           });
           await form.reset();
-          form.setValues({ ...data?.data, ...keepValues });
-          form.setInitialValues({ ...data?.data, ...keepValues });
+          form.setValues(keepValues);
+          form.setInitialValues(keepValues);
         },
       },
       props,

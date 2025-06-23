@@ -1743,12 +1743,11 @@ export async function resetFormCorrectly(form: Form) {
   untracked(() => {
     Object.keys(form.fields).forEach((key) => {
       const field = form.fields[key] as Field;
-      if (isSubMode(field)) {
-        // 清空子表格或者子表单的初始值，可以确保后面的 reset 会清空子表格或者子表单的值
-        field.initialValue = null;
-      }
       if (field.componentProps?.keepValueAfterSubmit) {
         keepValues[key] = field.value;
+      } else {
+        // 不需要保持原值的字段，在重置前清空初始值
+        field.initialValue = null;
       }
     });
   });
