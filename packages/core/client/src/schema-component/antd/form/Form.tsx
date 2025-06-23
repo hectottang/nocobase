@@ -106,9 +106,16 @@ export const Form: React.FC<FormProps> & { Designer?: any } = observer(
       {
         uid: fieldSchema['x-uid'],
         async onSuccess(data) {
+          const keepValues: Record<string, any> = {};
+          Object.keys(form.fields).forEach((key) => {
+            const field = form.fields[key] as any;
+            if (field?.componentProps?.keepValueAfterSubmit) {
+              keepValues[key] = field.value;
+            }
+          });
           await form.reset();
-          form.setValues(data?.data);
-          form.setInitialValues(data?.data);
+          form.setValues({ ...data?.data, ...keepValues });
+          form.setInitialValues({ ...data?.data, ...keepValues });
         },
       },
       props,

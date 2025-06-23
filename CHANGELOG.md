@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v1.7.16](https://github.com/nocobase/nocobase/compare/v1.7.15...v1.7.16) - 2025-06-19
 
+### 🚀 Improvements
+
+- **[Form]** Add "Keep value after submit" option to preserve field values after submission
+
 ### 🐛 Bug Fixes
 
 - **[Workflow]**
