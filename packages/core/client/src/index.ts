@@ -29,6 +29,7 @@ export * from './appInfo';
 export * from './application';
 export * from './async-data-provider';
 export * from './block-provider';
+export { resetFormCorrectly } from './block-provider/hooks';
 export * from './collection-manager';
 
 export * from './common';

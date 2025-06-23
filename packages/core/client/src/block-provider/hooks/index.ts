@@ -1738,16 +1738,32 @@ function getTargetField(obj) {
  * 主要用于修复这个问题：https://nocobase.height.app/T-3106
  * @param form
  */
-async function resetFormCorrectly(form: Form) {
+export async function resetFormCorrectly(form: Form) {
+  const keepValues: Record<string, any> = {};
   untracked(() => {
     Object.keys(form.fields).forEach((key) => {
-      if (isSubMode(form.fields[key])) {
+      const field = form.fields[key] as Field;
+      if (isSubMode(field)) {
         // 清空子表格或者子表单的初始值，可以确保后面的 reset 会清空子表格或者子表单的值
-        (form.fields[key] as Field).initialValue = null;
+        field.initialValue = null;
+      }
+      if (field.componentProps?.keepValueAfterSubmit) {
+        keepValues[key] = field.value;
       }
     });
   });
   await form.reset();
+  if (Object.keys(keepValues).length) {
+    form.setValues(keepValues);
+    untracked(() => {
+      Object.keys(keepValues).forEach((key) => {
+        const field = form.fields[key] as Field;
+        if (field) {
+          field.initialValue = keepValues[key];
+        }
+      });
+    });
+  }
 }
 
 export function appendQueryStringToUrl(url: string, queryString: string) {

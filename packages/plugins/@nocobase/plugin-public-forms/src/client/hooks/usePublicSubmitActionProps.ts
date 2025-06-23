@@ -8,7 +8,7 @@
  */
 import { useContext } from 'react';
 import { useForm, useFieldSchema, useField } from '@formily/react';
-import { useDataBlockResource, useCollectValuesToSubmit, useFormBlockContext } from '@nocobase/client';
+import { useDataBlockResource, useCollectValuesToSubmit, useFormBlockContext, resetFormCorrectly } from '@nocobase/client';
 import { PublicFormMessageContext } from '../components/PublicFormPage';
 
 export const usePublicSubmitActionProps = () => {
@@ -38,7 +38,7 @@ export const usePublicSubmitActionProps = () => {
             : undefined,
           updateAssociationValues,
         });
-        await form.reset();
+        await resetFormCorrectly(form);
         actionField.data.loading = false;
         setShowMessage(true);
       } catch (error) {

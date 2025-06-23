@@ -17,6 +17,7 @@ import {
   useDataBlockResource,
   usePlugin,
 } from '@nocobase/client';
+import { resetFormCorrectly } from '@nocobase/client';
 import { App as AntdApp } from 'antd';
 import PluginPublicFormsClient from '..';
 
@@ -99,7 +100,7 @@ export const useSubmitActionProps = () => {
         });
         await api.resource('uiSchemas').insert({ values: schema });
       }
-      form.reset();
+      await resetFormCorrectly(form);
       await service.refresh();
       message.success('Saved successfully!');
       setVisible(false);
