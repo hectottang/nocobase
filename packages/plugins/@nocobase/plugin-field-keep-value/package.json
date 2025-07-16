@@ -1,0 +1,11 @@
+{
+  "name": "@nocobase/plugin-field-keep-value",
+  "version": "1.0.0",
+  "main": "./dist/server/index.js",
+  "types": "./dist/server/index.d.ts",
+  "license": "AGPL-3.0",
+  "peerDependencies": {
+    "@nocobase/client": "1.x",
+    "@nocobase/server": "1.x"
+  }
+}

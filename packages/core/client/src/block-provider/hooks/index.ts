@@ -1739,11 +1739,18 @@ function getTargetField(obj) {
  * @param form
  */
 async function resetFormCorrectly(form: Form) {
+  const oldValues = { ...form.values };
   untracked(() => {
     Object.keys(form.fields).forEach((key) => {
-      if (isSubMode(form.fields[key])) {
+      const field = form.fields[key] as Field;
+      if (isSubMode(field)) {
         // 清空子表格或者子表单的初始值，可以确保后面的 reset 会清空子表格或者子表单的值
-        (form.fields[key] as Field).initialValue = null;
+        field.initialValue = null;
+        return;
+      }
+
+      if ((field.componentProps as any)?.retainValue) {
+        field.initialValue = oldValues[key];
       }
     });
   });
