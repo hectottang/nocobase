@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 export class PluginFieldKeepValueClient extends Plugin {
   async load() {
-    this.schemaSettingsManager.addItem('fieldSettings:FormItem.decoratorOptions', 'keepValueAfterSubmit', {
+    this.app.schemaSettingsManager.addItem('fieldSettings:FormItem', 'decoratorOptions.keepValueAfterSubmit', {
       type: 'switch',
       useComponentProps() {
         const { t } = useTranslation();
