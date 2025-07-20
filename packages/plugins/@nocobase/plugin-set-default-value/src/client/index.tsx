@@ -57,7 +57,7 @@ class PluginSetDefaultValue extends Plugin {
       SetDefaultValueButton: setDefaultButton,
     });
 
-    this.app.schemaSettingsManager.addItem('fieldSettings:component:Input', 'enableSetDefault', {
+    this.app.schemaSettingsManager.addItem('fieldSettings:FormItem', 'enableSetDefault', {
       type: 'switch',
       useComponentProps() {
         const { t } = useTranslation(NAMESPACE);
