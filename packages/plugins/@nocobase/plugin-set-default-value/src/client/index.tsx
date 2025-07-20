@@ -22,6 +22,7 @@ const SetDefaultValueButton: FC = observer(
 
     const handleClick = async () => {
       fieldSchema.default = field.value;
+      field.setInitialValue?.(field.value);
       await dn.emit('patch', {
         schema: {
           'x-uid': fieldSchema['x-uid'],
