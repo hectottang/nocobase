@@ -3,7 +3,7 @@
  */
 import { Field } from '@formily/core';
 import { observer, useField, useFieldSchema } from '@formily/react';
-import { Plugin, useDesignable, useToken } from '@nocobase/client';
+import { Plugin, useDesignable, useToken, useIsAllowToSetDefaultValue } from '@nocobase/client';
 import { Button, Tooltip } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import React, { FC } from 'react';
@@ -59,6 +59,10 @@ class PluginSetDefaultValue extends Plugin {
 
     this.app.schemaSettingsManager.addItem('fieldSettings:FormItem', 'enableSetDefault', {
       type: 'switch',
+      useVisible() {
+        const { isAllowToSetDefaultValue } = useIsAllowToSetDefaultValue();
+        return isAllowToSetDefaultValue();
+      },
       useComponentProps() {
         const { t } = useTranslation(NAMESPACE);
         const fieldSchema = useFieldSchema();
