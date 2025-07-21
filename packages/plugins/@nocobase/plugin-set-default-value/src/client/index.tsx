@@ -68,16 +68,38 @@ class PluginSetDefaultValue extends Plugin {
         const fieldSchema = useFieldSchema();
         const field = useField();
         const { dn } = useDesignable();
+
+        const component = fieldSchema['x-component'];
+        const getPropName = () => {
+          switch (component) {
+            case 'ColorSelect':
+              return 'suffix';
+            case 'Select':
+            case 'TreeSelect':
+            case 'AssociationSelect':
+            case 'Cascader':
+            case 'RemoteSelect':
+            case 'CustomSelect':
+            case 'DatePicker':
+            case 'TimePicker':
+              return 'suffixIcon';
+            default:
+              return 'addonAfter';
+          }
+        };
+
+        const propName = getPropName();
+
         return {
           title: t('Display set default button'),
-          checked: !!fieldSchema['x-component-props']?.addonAfter,
+          checked: !!fieldSchema['x-component-props']?.[propName],
           onChange: async (checked) => {
             if (checked) {
-              field.componentProps.addonAfter = setDefaultButton;
-              _.set(fieldSchema, 'x-component-props.addonAfter', '{{SetDefaultValueButton}}');
+              field.componentProps[propName] = setDefaultButton;
+              _.set(fieldSchema, `x-component-props.${propName}`, '{{SetDefaultValueButton}}');
             } else {
-              field.componentProps.addonAfter = null;
-              _.unset(fieldSchema, 'x-component-props.addonAfter');
+              field.componentProps[propName] = null;
+              _.unset(fieldSchema, `x-component-props.${propName}`);
             }
             await dn.emit('patch', {
               schema: {
