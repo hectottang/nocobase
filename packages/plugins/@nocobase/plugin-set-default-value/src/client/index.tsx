@@ -4,7 +4,7 @@
 import { Field } from '@formily/core';
 import { observer, useField, useFieldSchema } from '@formily/react';
 import { Plugin, useDesignable, useToken, useIsAllowToSetDefaultValue } from '@nocobase/client';
-import { Button, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,12 +34,9 @@ const SetDefaultValueButton: FC = observer(
 
     return (
       <Tooltip title={t('Set as default value')}>
-        <Button
-          type="text"
-          size="small"
-          icon={<SaveOutlined />}
+        <SaveOutlined
           onClick={handleClick}
-          style={{ marginLeft: token.marginXXS }}
+          style={{ marginLeft: token.marginXXS, cursor: 'pointer' }}
         />
       </Tooltip>
     );
