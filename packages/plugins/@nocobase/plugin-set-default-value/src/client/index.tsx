@@ -36,7 +36,7 @@ const SetDefaultValueButton: FC = observer(
       <Tooltip title={t('Set as default value')}>
         <SaveOutlined
           onClick={handleClick}
-          style={{ marginLeft: token.marginXXS, cursor: 'pointer' }}
+          style={{ marginRight: token.marginXXS, cursor: 'pointer' }}
         />
       </Tooltip>
     );
@@ -70,7 +70,7 @@ class PluginSetDefaultValue extends Plugin {
         const getPropName = () => {
           switch (component) {
             case 'ColorSelect':
-              return 'suffix';
+              return 'prefix';
             case 'Select':
             case 'TreeSelect':
             case 'AssociationSelect':
@@ -79,9 +79,9 @@ class PluginSetDefaultValue extends Plugin {
             case 'CustomSelect':
             case 'DatePicker':
             case 'TimePicker':
-              return 'suffixIcon';
+              return 'prefixIcon';
             default:
-              return 'addonAfter';
+              return 'addonBefore';
           }
         };
 
