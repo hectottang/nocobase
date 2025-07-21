@@ -70,7 +70,7 @@ class PluginSetDefaultValue extends Plugin {
         const getPropName = () => {
           switch (component) {
             case 'ColorSelect':
-              return 'prefix';
+              return 'suffix';
             case 'Select':
             case 'TreeSelect':
             case 'AssociationSelect':
@@ -79,7 +79,7 @@ class PluginSetDefaultValue extends Plugin {
             case 'CustomSelect':
             case 'DatePicker':
             case 'TimePicker':
-              return 'prefixIcon';
+              return 'suffixIcon';
             default:
               return 'addonBefore';
           }
