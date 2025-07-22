@@ -5,7 +5,7 @@ import { Field } from '@formily/core';
 import { observer, useField, useFieldSchema } from '@formily/react';
 import { Plugin, useDesignable, useToken, useIsAllowToSetDefaultValue } from '@nocobase/client';
 import { Tooltip } from 'antd';
-import { SaveOutlined } from '@ant-design/icons';
+import { SaveOutlined, DownOutlined, CalendarOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -87,15 +87,49 @@ class PluginSetDefaultValue extends Plugin {
 
         const propName = getPropName();
 
+        const getDefaultIcon = () => {
+          switch (component) {
+            case 'Select':
+            case 'TreeSelect':
+            case 'AssociationSelect':
+            case 'Cascader':
+            case 'RemoteSelect':
+            case 'CustomSelect':
+              return <DownOutlined />;
+            case 'DatePicker':
+              return <CalendarOutlined />;
+            case 'TimePicker':
+              return <ClockCircleOutlined />;
+            default:
+              return null;
+          }
+        };
+
         return {
           title: t('Display set default button'),
           checked: !!fieldSchema['x-component-props']?.[propName],
           onChange: async (checked) => {
             if (checked) {
-              field.componentProps[propName] = setDefaultButton;
+              if (propName === 'suffixIcon') {
+                field.componentProps[propName] = (
+                  <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    {setDefaultButton}
+                    {getDefaultIcon()}
+                  </span>
+                );
+              } else if (propName === 'suffix') {
+                field.componentProps[propName] = (
+                  <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    {setDefaultButton}
+                    {getDefaultIcon()}
+                  </span>
+                );
+              } else {
+                field.componentProps[propName] = setDefaultButton;
+              }
               _.set(fieldSchema, `x-component-props.${propName}`, '{{SetDefaultValueButton}}');
             } else {
-              field.componentProps[propName] = null;
+              field.componentProps[propName] = undefined;
               _.unset(fieldSchema, `x-component-props.${propName}`);
             }
             await dn.emit('patch', {
