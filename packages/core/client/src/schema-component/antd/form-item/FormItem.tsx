@@ -60,8 +60,12 @@ const formItemLabelCss = css`
   }
 `;
 
+interface NBFormItemProps extends IFormItemProps {
+  render?: (children: React.ReactNode) => React.ReactNode;
+}
+
 export const FormItem: any = withDynamicSchemaProps(
-  observer((props: IFormItemProps) => {
+  observer((props: NBFormItemProps) => {
     useEnsureOperatorsValid();
     const field = useField<Field>();
     const schema = useFieldSchema();
@@ -118,15 +122,23 @@ export const FormItem: any = withDynamicSchemaProps(
             )}
           >
             <ACLCollectionFieldProvider>
-              <Item
-                className={className}
-                {...props}
-                extra={extra}
-                wrapperStyle={{
-                  ...(wrapperStyle.backgroundColor ? { paddingLeft: '5px', paddingRight: '5px' } : {}),
-                  ...wrapperStyle,
-                }}
-              />
+              {(() => {
+                const { render, children, ...rest } = props as NBFormItemProps;
+                const node = (
+                  <Item
+                    className={className}
+                    {...rest}
+                    extra={extra}
+                    wrapperStyle={{
+                      ...(wrapperStyle.backgroundColor ? { paddingLeft: '5px', paddingRight: '5px' } : {}),
+                      ...wrapperStyle,
+                    }}
+                  >
+                    {children}
+                  </Item>
+                );
+                return render ? render(node) : node;
+              })()}
             </ACLCollectionFieldProvider>
           </BlockItem>
         </CollectionFieldProvider>

@@ -5,7 +5,7 @@ import { Field } from '@formily/core';
 import { observer, useField, useFieldSchema } from '@formily/react';
 import { Plugin, useDesignable, useToken, useIsAllowToSetDefaultValue } from '@nocobase/client';
 import { Tooltip } from 'antd';
-import { SaveOutlined, DownOutlined, CalendarOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { SaveOutlined } from '@ant-design/icons';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -46,12 +46,22 @@ const SetDefaultValueButton: FC = observer(
   },
 );
 
+const renderWithButton = (children: React.ReactNode) => {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+      <SetDefaultValueButton />
+      {children}
+    </span>
+  );
+};
+
 class PluginSetDefaultValue extends Plugin {
   async load() {
     const setDefaultButton = <SetDefaultValueButton />;
 
     this.app.addScopes({
       SetDefaultValueButton: setDefaultButton,
+      renderWithButton,
     });
 
     this.app.schemaSettingsManager.addItem('fieldSettings:FormItem', 'enableSetDefault', {
@@ -67,76 +77,49 @@ class PluginSetDefaultValue extends Plugin {
         const { dn } = useDesignable();
 
         const component = fieldSchema['x-component'];
-        const getPropName = () => {
-          switch (component) {
-            case 'ColorSelect':
-              return 'suffix';
-            case 'Select':
-            case 'TreeSelect':
-            case 'AssociationSelect':
-            case 'Cascader':
-            case 'RemoteSelect':
-            case 'CustomSelect':
-            case 'DatePicker':
-            case 'TimePicker':
-              return 'suffixIcon';
-            default:
-              return 'addonBefore';
-          }
-        };
-
-        const propName = getPropName();
-
-        const getDefaultIcon = () => {
-          switch (component) {
-            case 'Select':
-            case 'TreeSelect':
-            case 'AssociationSelect':
-            case 'Cascader':
-            case 'RemoteSelect':
-            case 'CustomSelect':
-              return <DownOutlined />;
-            case 'DatePicker':
-              return <CalendarOutlined />;
-            case 'TimePicker':
-              return <ClockCircleOutlined />;
-            default:
-              return null;
-          }
-        };
+        const renderOnly = [
+          'Select',
+          'TreeSelect',
+          'AssociationSelect',
+          'Cascader',
+          'RemoteSelect',
+          'CustomSelect',
+          'DatePicker',
+          'TimePicker',
+          'ColorSelect',
+        ].includes(component);
 
         return {
           title: t('Display set default button'),
-          checked: !!fieldSchema['x-component-props']?.[propName],
+          checked: renderOnly
+            ? !!fieldSchema['x-decorator-props']?.render
+            : !!fieldSchema['x-component-props']?.addonBefore,
           onChange: async (checked) => {
             if (checked) {
-              if (propName === 'suffixIcon') {
-                field.componentProps[propName] = (
-                  <span style={{ display: 'inline-flex', alignItems: 'center' }}>
-                    {setDefaultButton}
-                    {getDefaultIcon()}
-                  </span>
-                );
-              } else if (propName === 'suffix') {
-                field.componentProps[propName] = (
-                  <span style={{ display: 'inline-flex', alignItems: 'center' }}>
-                    {setDefaultButton}
-                    {getDefaultIcon()}
-                  </span>
-                );
+              if (renderOnly) {
+                field.decoratorProps.render = renderWithButton;
+                _.set(fieldSchema, 'x-decorator-props.render', '{{renderWithButton}}');
               } else {
-                field.componentProps[propName] = setDefaultButton;
+                field.componentProps.addonBefore = setDefaultButton;
+                _.set(fieldSchema, 'x-component-props.addonBefore', '{{SetDefaultValueButton}}');
               }
-              _.set(fieldSchema, `x-component-props.${propName}`, '{{SetDefaultValueButton}}');
             } else {
-              field.componentProps[propName] = undefined;
-              _.unset(fieldSchema, `x-component-props.${propName}`);
+              if (renderOnly) {
+                field.decoratorProps.render = undefined;
+                _.unset(fieldSchema, 'x-decorator-props.render');
+              } else {
+                field.componentProps.addonBefore = undefined;
+                _.unset(fieldSchema, 'x-component-props.addonBefore');
+              }
             }
             await dn.emit('patch', {
               schema: {
                 'x-uid': fieldSchema['x-uid'],
                 'x-component-props': {
                   ...fieldSchema['x-component-props'],
+                },
+                'x-decorator-props': {
+                  ...fieldSchema['x-decorator-props'],
                 },
               },
             });
