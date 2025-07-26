@@ -5,58 +5,24 @@ import { Field } from '@formily/core';
 import { observer, useField, useFieldSchema } from '@formily/react';
 import { Plugin, useDesignable, useToken, useIsAllowToSetDefaultValue } from '@nocobase/client';
 import { Tooltip } from 'antd';
-import {
-  SaveOutlined,
-  DownOutlined,
-  CalendarOutlined,
-  ClockCircleOutlined,
-} from '@ant-design/icons';
+import { SaveOutlined } from '@ant-design/icons';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 const NAMESPACE = 'set-default-value';
 
-const getPropName = (component: string) => {
-  switch (component) {
-    case 'ColorSelect':
-      return 'suffix';
-    case 'Select':
-    case 'TreeSelect':
-    case 'AssociationSelect':
-    case 'Cascader':
-    case 'RemoteSelect':
-    case 'CustomSelect':
-    case 'DatePicker':
-    case 'TimePicker':
-      return 'suffixIcon';
-    default:
-      return 'addonBefore';
-  }
-};
-
-const getDefaultIcon = (component: string) => {
-  switch (component) {
-    case 'DatePicker':
-      return <CalendarOutlined />;
-    case 'TimePicker':
-      return <ClockCircleOutlined />;
-    default:
-      return <DownOutlined />;
-  }
-};
-
-const SuffixIconWithButton: FC = () => {
-  const fieldSchema = useFieldSchema();
-  const component = fieldSchema['x-component'];
+const PrefixWrapper: FC<{ children?: React.ReactNode }> = ({ children }) => {
   const { token } = useToken();
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center' }}>
       <SetDefaultValueButton />
-      <span style={{ marginLeft: token.marginXXS }}>{getDefaultIcon(component)}</span>
+      <span style={{ marginLeft: token.marginXXS }}>{children}</span>
     </span>
   );
 };
+
+const renderWithButton = (node: React.ReactNode) => <PrefixWrapper>{node}</PrefixWrapper>;
 
 const SetDefaultValueButton: FC = observer(
   () => {
@@ -99,7 +65,7 @@ class PluginSetDefaultValue extends Plugin {
 
     this.app.addScopes({
       SetDefaultValueButton: setDefaultButton,
-      SuffixIconWithButton: <SuffixIconWithButton />,
+      renderWithButton,
     });
 
     this.app.schemaSettingsManager.addItem('fieldSettings:FormItem', 'enableSetDefault', {
@@ -113,41 +79,16 @@ class PluginSetDefaultValue extends Plugin {
         const fieldSchema = useFieldSchema();
         const field = useField();
         const { dn } = useDesignable();
-
-        const component = fieldSchema['x-component'];
-        const propName = getPropName(component);
-
         return {
           title: t('Display set default button'),
-          checked:
-            propName === 'addonBefore'
-              ? !!fieldSchema['x-component-props']?.addonBefore
-              : !!fieldSchema['x-component-props']?.[propName],
+          checked: !!fieldSchema['x-decorator-props']?.render,
           onChange: async (checked) => {
             if (checked) {
-              if (propName === 'addonBefore') {
-                field.componentProps.addonBefore = setDefaultButton;
-                _.set(
-                  fieldSchema,
-                  'x-component-props.addonBefore',
-                  '{{SetDefaultValueButton}}',
-                );
-              } else {
-                field.componentProps[propName] = <SuffixIconWithButton />;
-                _.set(
-                  fieldSchema,
-                  `x-component-props.${propName}`,
-                  '{{SuffixIconWithButton}}',
-                );
-              }
+              field.decoratorProps.render = renderWithButton;
+              _.set(fieldSchema, 'x-decorator-props.render', '{{renderWithButton}}');
             } else {
-              if (propName === 'addonBefore') {
-                field.componentProps.addonBefore = undefined;
-                _.unset(fieldSchema, 'x-component-props.addonBefore');
-              } else {
-                field.componentProps[propName] = undefined;
-                _.unset(fieldSchema, `x-component-props.${propName}`);
-              }
+              field.decoratorProps.render = undefined;
+              _.unset(fieldSchema, 'x-decorator-props.render');
             }
             await dn.emit('patch', {
               schema: {
