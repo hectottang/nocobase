@@ -1,0 +1,27 @@
+{
+  "name": "@nocobase/plugin-set-default-value",
+  "version": "1.8.5",
+  "main": "./dist/server/index.js",
+  "displayName": "Set default value",
+  "displayName.zh-CN": "设置默认值",
+  "description": "Add a button to set current value as default",
+  "description.zh-CN": "为字段添加将当前值设置为默认值的按钮",
+  "license": "AGPL-3.0",
+  "homepage": "https://www.nocobase.com",
+  "devDependencies": {
+    "@ant-design/icons": "5.x",
+    "@formily/react": "2.x",
+    "antd": "5.x",
+    "react": "^18.2.0",
+    "react-i18next": "^11.15.1"
+  },
+  "peerDependencies": {
+    "@nocobase/client": "1.x",
+    "@nocobase/server": "1.x",
+    "@nocobase/test": "1.x"
+  },
+  "keywords": [
+    "Default",
+    "Field"
+  ]
+}
